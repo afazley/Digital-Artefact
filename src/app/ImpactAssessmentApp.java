@@ -2,12 +2,15 @@ package app;
 
 import java.util.Scanner;
 import model.Risk;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ImpactAssessmentApp {
 
     public static void main(String[] args) {
 
         Scanner scanner = new Scanner(System.in);
+        List<Risk> risks = new ArrayList<>();
         boolean running = true;
 
         while (running) {
@@ -16,7 +19,7 @@ public class ImpactAssessmentApp {
             System.out.println("   IMPACT ASSESSMENT GENERATOR");
             System.out.println("===============================");
             System.out.println("1. Create new assessment");
-            System.out.println("2. View assessment");
+            System.out.println("2. View assessment (FOR NOW - viewing saved risks)");
             System.out.println("3. Add risk");
             System.out.println("4. Add stakeholder");
             System.out.println("5. Check missing information");
@@ -32,11 +35,11 @@ public class ImpactAssessmentApp {
                     break;
 
                 case "2":
-                    System.out.println("View assessment selected.");
+                    viewRisks(risks);
                     break;
 
                 case "3":
-                    addRisk(scanner);
+                    addRisk(scanner, risks);
                     break;
 
                 case "4":
@@ -64,7 +67,7 @@ public class ImpactAssessmentApp {
         scanner.close();
     }
 
-    public static void addRisk(Scanner scanner) {
+    public static void addRisk(Scanner scanner, List<Risk> risks) {
 
     System.out.println("\n--- ADD NEW RISK ---");
 
@@ -109,6 +112,9 @@ public class ImpactAssessmentApp {
     String mitigation = scanner.nextLine();
 
     Risk risk = new Risk(description, probability, impact, mitigation);
+    risks.add(risk);
+
+    System.out.println("Risk successfully saved!");
 
     System.out.println("\n--- RISK ASSESSMENT ---");
     System.out.println("Description: " + risk.getDescription());
@@ -116,4 +122,26 @@ public class ImpactAssessmentApp {
     System.out.println("Risk level: " + risk.getRiskLevel());
     System.out.println("Mitigation: " + risk.getMitigation());
 }
+
+public static void viewRisks(List<Risk> risks) {
+
+    System.out.println("\n--- SAVED RISKS ---");
+
+    if (risks.isEmpty()) {
+        System.out.println("No risks have been added yet.");
+        return;
+    }
+
+    for (int i = 0; i < risks.size(); i++) {
+
+        Risk risk = risks.get(i);
+
+        System.out.println("\nRisk " + (i + 1));
+        System.out.println("Description: " + risk.getDescription());
+        System.out.println("Score: " + risk.calculateRiskScore());
+        System.out.println("Level: " + risk.getRiskLevel());
+        System.out.println("Mitigation: " + risk.getMitigation());
+    }
+}
+
 }
