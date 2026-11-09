@@ -40,4 +40,12 @@ public class Risk {
     public String getMitigation() {
         return mitigation;
     }
+
+    public int getProbability() {
+    return probability;
+    }
+
+    public int getImpact() {
+    return impact;
+    }
 }

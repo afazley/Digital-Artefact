@@ -1,9 +1,9 @@
 package app;
 
-import java.util.Scanner;
-import model.Risk;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
+import model.Risk;
 
 public class ImpactAssessmentApp {
 
@@ -25,9 +25,10 @@ public class ImpactAssessmentApp {
             System.out.println("5. Check missing information");
             System.out.println("6. Generate report");
             System.out.println("7. Exit");
-            System.out.print("Enter your choice: ");
 
+            System.out.print("Enter your choice: ");
             String choice = scanner.nextLine();
+            System.out.println("DEBUG: You entered [" + choice + "]");
 
             switch (choice) {
                 case "1":
@@ -35,6 +36,8 @@ public class ImpactAssessmentApp {
                     break;
 
                 case "2":
+                    System.out.println("eterge.");
+
                     viewRisks(risks);
                     break;
 
@@ -125,21 +128,23 @@ public class ImpactAssessmentApp {
 
 public static void viewRisks(List<Risk> risks) {
 
-    System.out.println("\n--- SAVED RISKS ---");
+    System.out.println("\nVIEW RISKS METHOD HAS STARTED");
 
-    if (risks.isEmpty()) {
+    System.out.println("Number of risks stored: " + risks.size());
+
+    if (risks.size() == 0) {
         System.out.println("No risks have been added yet.");
         return;
     }
 
-    for (int i = 0; i < risks.size(); i++) {
+    for (Risk risk : risks) {
 
-        Risk risk = risks.get(i);
-
-        System.out.println("\nRisk " + (i + 1));
+        System.out.println("----------------------");
         System.out.println("Description: " + risk.getDescription());
-        System.out.println("Score: " + risk.calculateRiskScore());
-        System.out.println("Level: " + risk.getRiskLevel());
+        System.out.println("Probability: " + risk.getProbability());
+        System.out.println("Impact: " + risk.getImpact());
+        System.out.println("Risk score: " + risk.calculateRiskScore());
+        System.out.println("Risk level: " + risk.getRiskLevel());
         System.out.println("Mitigation: " + risk.getMitigation());
     }
 }
