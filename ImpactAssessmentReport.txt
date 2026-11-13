@@ -1,0 +1,30 @@
+==================================
+       IMPACT ASSESSMENT REPORT
+==================================
+
+PROJECT DETAILS
+Project name: Test
+Change description: New servers
+Reason for change: Required as more employees
+Implementation date: 13th dec
+
+RISKS
+
+Risk 1
+Description: connectivity cost
+Probability: 4
+Impact: 5
+Score: 20
+Level: High
+Mitigation: budget
+
+STAKEHOLDERS
+
+Stakeholder 1
+Name: amir
+Role: manager
+Department: server
+
+==================================
+          END OF REPORT
+==================================
