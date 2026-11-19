@@ -3,6 +3,7 @@ package app;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import model.AssessmentStatus;
 import model.ImpactAssessment;
 import model.ProjectChange;
 import model.Risk;
@@ -41,6 +42,9 @@ public class ImpactAssessmentApp {
             System.out.println("9. View all assessments");
             System.out.println("10. Select assessment");
             System.out.println("11. Switch user role");
+            System.out.println("12. Start / Resume assessment");
+            System.out.println("13. Submit assessment for approval");
+            System.out.println("14. Review assessment (Manager only)");
 
             System.out.print("Enter your choice: ");
             String choice = scanner.nextLine().trim();
@@ -191,7 +195,107 @@ public class ImpactAssessmentApp {
                 case "11":
                     currentRole = selectRole(scanner);
                     break;
+
+                case "12":
+
+                    if (assessment == null) {
+                        System.out.println("Please select an assessment first.");
+                        break;
+                    }
+
+                    if (service.startAssessment(assessment)) {
+                        System.out.println("Assessment is now IN PROGRESS.");
+                    } else {
+                        System.out.println(
+                            "Cannot start assessment from status: "
+                            + assessment.getStatus()
+                        );
+                    }
+
+                    break;
+
+                case "13":
+
+                    if (assessment == null) {
+                        System.out.println("Please select an assessment first.");
+                        break;
+                    }
+
+                    if (service.submitAssessment(assessment)) {
+                        System.out.println("Assessment submitted for approval!");
+                    } else {
+                        System.out.println(
+                            "Submission failed. Assessment must be IN PROGRESS "
+                            + "and contain all required information."
+                        );
+                    }
+
+                    break;
                     
+                case "14":
+
+                    if (currentRole != UserRole.MANAGER) {
+                        System.out.println(
+                            "Access denied. Only managers can review assessments."
+                        );
+                        break;
+                    }
+
+                    if (assessment == null) {
+                        System.out.println("Please select an assessment first.");
+                        break;
+                    }
+
+                    if (assessment.getStatus() != AssessmentStatus.PENDING_APPROVAL) {
+                        System.out.println(
+                            "Assessment must be PENDING APPROVAL before review."
+                        );
+                        break;
+                    }
+
+                    System.out.println("\n--- MANAGER REVIEW ---");
+                    System.out.println("1. Approve");
+                    System.out.println("2. Reject");
+                    System.out.println("3. Request changes");
+
+                    System.out.print("Enter decision: ");
+                    String decisionChoice = scanner.nextLine().trim();
+
+                    AssessmentStatus decision = null;
+
+                    switch (decisionChoice) {
+                        case "1":
+                            decision = AssessmentStatus.APPROVED;
+                            break;
+
+                        case "2":
+                            decision = AssessmentStatus.REJECTED;
+                            break;
+
+                        case "3":
+                            decision = AssessmentStatus.CHANGES_REQUIRED;
+                            break;
+
+                        default:
+                            System.out.println("Invalid review decision.");
+                            break;
+                    }
+
+                    if (!decisionChoice.equals("1")
+                            && !decisionChoice.equals("2")
+                            && !decisionChoice.equals("3")) {
+                        break;
+                    }
+
+                    if (service.reviewAssessment(assessment, decision)) {
+                        System.out.println(
+                            "Assessment status updated to: "
+                            + assessment.getStatus()
+                        );
+                    }
+
+                    break;
+                
                 default:
                     System.out.println("Invalid choice. Please try again.");
             }

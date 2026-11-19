@@ -1,10 +1,10 @@
 package service;
 import java.util.List;
+import model.AssessmentStatus;
 import model.ImpactAssessment;
 import model.ProjectChange;
 import model.Risk;
 import model.Stakeholder;
-
 public class AssessmentService {
 
     public ImpactAssessment createAssessment(
@@ -72,6 +72,23 @@ public class AssessmentService {
             System.out.println("Risks: " + assessment.getRisks().size());
             System.out.println("Stakeholders: "
                     + assessment.getStakeholders().size());
+                    
+            System.out.println("Status: " + assessment.getStatus());
         }
+    }
+
+    public boolean startAssessment(ImpactAssessment assessment) {
+    return assessment.startProgress();
+    }
+
+    public boolean submitAssessment(ImpactAssessment assessment) {
+        return assessment.submitForApproval();
+    }
+
+    public boolean reviewAssessment(
+            ImpactAssessment assessment,
+            AssessmentStatus decision) {
+
+        return assessment.reviewAssessment(decision);
     }
 }
