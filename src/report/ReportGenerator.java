@@ -3,6 +3,7 @@ package report;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
 import model.Risk;
 import model.Stakeholder;
@@ -29,14 +30,32 @@ public class ReportGenerator {
             writer.println("Change description: " + changeDescription);
             writer.println("Reason for change: " + reason);
             writer.println("Implementation date: " + implementationDate);
+            
+            List<Risk> sortedRisks = new ArrayList<>(risks);
+
+            for (int i = 0; i < sortedRisks.size() - 1; i++) {
+
+                for (int j = 0; j < sortedRisks.size() - i - 1; j++) {
+
+                    Risk currentRisk = sortedRisks.get(j);
+                    Risk nextRisk = sortedRisks.get(j + 1);
+
+                    if (currentRisk.calculateRiskScore()
+                            < nextRisk.calculateRiskScore()) {
+
+                        sortedRisks.set(j, nextRisk);
+                        sortedRisks.set(j + 1, currentRisk);
+                    }
+                }
+            }
 
             writer.println("\nRISKS");
 
-            if (risks.isEmpty()) {
+            if (sortedRisks.isEmpty()) {
                 writer.println("No risks recorded.");
             } else {
-                for (int i = 0; i < risks.size(); i++) {
-                    Risk risk = risks.get(i);
+                for (int i = 0; i < sortedRisks.size(); i++) {
+                    Risk risk = sortedRisks.get(i);
 
                     writer.println("\nRisk " + (i + 1));
                     writer.println("Description: " + risk.getDescription());

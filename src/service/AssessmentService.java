@@ -1,4 +1,5 @@
 package service;
+import java.util.ArrayList;
 import java.util.List;
 import model.AssessmentStatus;
 import model.ImpactAssessment;
@@ -72,7 +73,7 @@ public class AssessmentService {
             System.out.println("Risks: " + assessment.getRisks().size());
             System.out.println("Stakeholders: "
                     + assessment.getStakeholders().size());
-                    
+
             System.out.println("Status: " + assessment.getStatus());
         }
     }
@@ -90,5 +91,30 @@ public class AssessmentService {
             AssessmentStatus decision) {
 
         return assessment.reviewAssessment(decision);
+    }
+
+    public List<Risk> getSortedRisks(ImpactAssessment assessment) {
+
+    // Copy the risks so the original list is not modified.
+    List<Risk> sortedRisks = new ArrayList<>(assessment.getRisks());
+
+    // Bubble sort: highest risk score first.
+    for (int i = 0; i < sortedRisks.size() - 1; i++) {
+
+        for (int j = 0; j < sortedRisks.size() - i - 1; j++) {
+
+            Risk currentRisk = sortedRisks.get(j);
+            Risk nextRisk = sortedRisks.get(j + 1);
+
+            if (currentRisk.calculateRiskScore()
+                    < nextRisk.calculateRiskScore()) {
+
+                sortedRisks.set(j, nextRisk);
+                sortedRisks.set(j + 1, currentRisk);
+            }
+        }
+    }
+
+    return sortedRisks;
     }
 }

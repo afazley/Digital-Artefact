@@ -12,6 +12,7 @@ import model.UserRole;
 import report.ReportGenerator;
 import service.AssessmentService;
 
+
 public class ImpactAssessmentApp {
 
     public static void main(String[] args) {
@@ -404,23 +405,27 @@ public class ImpactAssessmentApp {
 
     public static void viewRisks(ImpactAssessment assessment) {
 
-        System.out.println("\n--- SAVED RISKS ---");
+        System.out.println("\n--- RISKS ORDERED BY PRIORITY ---");
 
-        if (assessment.getRisks().isEmpty()) {
+        AssessmentService service = new AssessmentService();
+
+        List<Risk> sortedRisks = service.getSortedRisks(assessment);
+
+        if (sortedRisks.isEmpty()) {
             System.out.println("No risks have been added yet.");
             return;
         }
 
-        for (int i = 0; i < assessment.getRisks().size(); i++) {
+        for (int i = 0; i < sortedRisks.size(); i++) {
 
-            Risk risk = assessment.getRisks().get(i);
+            Risk risk = sortedRisks.get(i);
 
-            System.out.println("\nRisk " + (i + 1));
+            System.out.println("\nPriority " + (i + 1));
             System.out.println("Description: " + risk.getDescription());
             System.out.println("Probability: " + risk.getProbability());
             System.out.println("Impact: " + risk.getImpact());
-            System.out.println("Score: " + risk.calculateRiskScore());
-            System.out.println("Level: " + risk.getRiskLevel());
+            System.out.println("Risk score: " + risk.calculateRiskScore());
+            System.out.println("Risk level: " + risk.getRiskLevel());
             System.out.println("Mitigation: " + risk.getMitigation());
         }
     }
