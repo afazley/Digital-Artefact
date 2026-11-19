@@ -1,6 +1,7 @@
 
 package app;
-
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import model.ImpactAssessment;
 import model.ProjectChange;
@@ -16,7 +17,8 @@ public class ImpactAssessmentApp {
         Scanner scanner = new Scanner(System.in);
         AssessmentService service = new AssessmentService();
 
-        ImpactAssessment assessment = new ImpactAssessment();
+        List<ImpactAssessment> assessments = new ArrayList<>();
+        ImpactAssessment assessment = null;
 
         boolean running = true;
 
@@ -33,6 +35,8 @@ public class ImpactAssessmentApp {
             System.out.println("6. Generate report");
             System.out.println("7. Exit");
             System.out.println("8. View stakeholders");
+            System.out.println("9. View all assessments");
+            System.out.println("10. Select assessment");
 
             System.out.print("Enter your choice: ");
             String choice = scanner.nextLine().trim();
@@ -58,28 +62,70 @@ public class ImpactAssessmentApp {
                         projectName, description, reason, date
                     );
 
-                    System.out.println("\nAssessment details saved!");
-                    break;
+                    service.addAssessment(assessments, assessment);
+
+                    System.out.println("\nAssessment created successfully!");
+                    System.out.println("Assessment ID: " + assessments.size());
+                    System.out.println("Currently selected: " + projectName);
 
                 case "2":
+                    if (assessment == null) {
+                        System.out.println(
+                                "Please create or select an assessment first."
+                        );
+                        break;
+                    }
+                    
                     viewRisks(assessment);
                     break;
 
                 case "3":
+
+                    if (assessment == null) {
+                        System.out.println(
+                                "Please create or select an assessment first."
+                        );
+                        break;
+                    }
+
                     Risk risk = addRisk(scanner);
                     service.addRisk(assessment, risk);
                     break;
 
                 case "4":
+
+                    if (assessment == null) {
+                        System.out.println(
+                                "Please create or select an assessment first."
+                        );
+                        break;
+                    }
+
                     Stakeholder stakeholder = addStakeholder(scanner);
                     service.addStakeholder(assessment, stakeholder);
                     break;
 
                 case "5":
+
+                    if (assessment == null) {
+                        System.out.println(
+                                "Please create or select an assessment first."
+                        );
+                        break;
+                    }
+
                     checkMissingInformation(assessment);
                     break;
 
                 case "6":
+
+                    if (assessment == null) {
+                        System.out.println(
+                                "Please create or select an assessment first."
+                        );
+                        break;
+                    }
+
                     generateReport(assessment);
                     break;
 
@@ -89,7 +135,53 @@ public class ImpactAssessmentApp {
                     break;
 
                 case "8":
+                    if (assessment == null) {
+                        System.out.println(
+                                "Please create or select an assessment first."
+                        );
+                        break;
+                    }
                     viewStakeholders(assessment);
+                    break;
+
+                case "9":
+                    service.viewAllAssessments(assessments);
+                    break;
+
+                case "10":
+
+                    if (assessments.isEmpty()) {
+                        System.out.println("No assessments available.");
+                        break;
+                    }
+
+                    service.viewAllAssessments(assessments);
+
+                    System.out.print("\nEnter assessment number to select: ");
+
+                    try {
+                        int selectedNumber = Integer.parseInt(
+                                scanner.nextLine().trim()
+                        );
+
+                        if (selectedNumber >= 1
+                                && selectedNumber <= assessments.size()) {
+
+                            assessment = assessments.get(selectedNumber - 1);
+
+                            System.out.println(
+                                    "Selected assessment: "
+                                    + assessment.getProjectChange().getProjectName()
+                            );
+
+                        } else {
+                            System.out.println("Invalid assessment number.");
+                        }
+
+                    } catch (NumberFormatException e) {
+                        System.out.println("Please enter a valid whole number.");
+                    }
+
                     break;
 
                 default:
