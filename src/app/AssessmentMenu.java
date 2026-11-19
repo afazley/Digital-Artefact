@@ -33,88 +33,117 @@ public class AssessmentMenu {
     }
 
     private void showMenu() {
-        System.out.println("\n===============================");
-        System.out.println(" IMPACT ASSESSMENT MANAGEMENT");
-        System.out.println("===============================");
-        System.out.println("Current role: " + controller.getCurrentRole());
 
-        ImpactAssessment assessment =
-                controller.getSelectedAssessment();
+    System.out.println("\n======================================");
+    System.out.println("       IMPACT ASSESSMENT SYSTEM");
+    System.out.println("======================================");
 
-        if (assessment != null) {
-            System.out.println(
-                    "Selected project: "
-                    + assessment.getProjectChange().getProjectName()
-            );
-            System.out.println("Status: " + assessment.getStatus());
-        } else {
-            System.out.println("Selected project: None");
-        }
+    System.out.println("Current role: " + controller.getCurrentRole());
 
-        System.out.println("\n1. Create new assessment");
-        System.out.println("2. View risks");
-        System.out.println("3. Add risk");
-        System.out.println("4. Add stakeholder");
-        System.out.println("5. Check missing information");
-        System.out.println("6. Generate report");
-        System.out.println("7. Exit");
-        System.out.println("8. View stakeholders");
-        System.out.println("9. View all assessments");
-        System.out.println("10. Select assessment");
-        System.out.println("11. Switch user role");
-        System.out.println("12. Start / Resume assessment");
-        System.out.println("13. Submit assessment for approval");
-        System.out.println("14. Review assessment (Manager only)");
+    ImpactAssessment assessment = controller.getSelectedAssessment();
+
+    if (assessment != null) {
+        System.out.println("Selected project: "
+                + assessment.getProjectChange().getProjectName());
+        System.out.println("Status: " + assessment.getStatus());
+    } else {
+        System.out.println("Selected project: None");
+    }
+
+    System.out.println("--------------------------------------");
+    System.out.println("       ASSESSMENT MANAGEMENT");
+    System.out.println("--------------------------------------");
+    System.out.println("[1]  Create new assessment");
+    System.out.println("[2]  View all assessments");
+    System.out.println("[3]  Select assessment");
+
+    System.out.println("\n       RISKS & STAKEHOLDERS");
+    System.out.println("--------------------------------------");
+    System.out.println("[4]  Add risk");
+    System.out.println("[5]  View prioritised risks");
+    System.out.println("[6]  Add stakeholder");
+    System.out.println("[7]  View stakeholders");
+
+    System.out.println("\n       REVIEW & APPROVAL");
+    System.out.println("--------------------------------------");
+    System.out.println("[8]  Check missing information");
+    System.out.println("[9]  Start / Resume assessment");
+    System.out.println("[10] Submit for approval");
+    System.out.println("[11] Manager review");
+
+    System.out.println("\n       SYSTEM");
+    System.out.println("--------------------------------------");
+    System.out.println("[12] Generate report");
+    System.out.println("[13] Switch user role");
+    System.out.println("[0]  Exit application");
+
+    System.out.println("======================================");
     }
 
     private void handleChoice(String choice) {
-        switch (choice) {
-            case "1":
-                controller.createAssessment();
-                break;
-            case "2":
-                controller.viewRisks();
-                break;
-            case "3":
-                controller.addRisk();
-                break;
-            case "4":
-                controller.addStakeholder();
-                break;
-            case "5":
-                controller.checkMissingInformation();
-                break;
-            case "6":
-                controller.generateReport();
-                break;
-            case "7":
-                System.out.println("Goodbye!");
-                running = false;
-                break;
-            case "8":
-                controller.viewStakeholders();
-                break;
-            case "9":
-                controller.viewAllAssessments();
-                break;
-            case "10":
-                controller.selectAssessment();
-                break;
-            case "11":
-                controller.setCurrentRole(selectRole());
-                break;
-            case "12":
-                controller.startAssessment();
-                break;
-            case "13":
-                controller.submitAssessment();
-                break;
-            case "14":
-                controller.reviewAssessment();
-                break;
-            default:
-                System.out.println("Invalid choice. Please try again.");
-        }
+
+    switch (choice) {
+
+        case "1":
+            controller.createAssessment();
+            break;
+
+        case "2":
+            controller.viewAllAssessments();
+            break;
+
+        case "3":
+            controller.selectAssessment();
+            break;
+
+        case "4":
+            controller.addRisk();
+            break;
+
+        case "5":
+            controller.viewRisks();
+            break;
+
+        case "6":
+            controller.addStakeholder();
+            break;
+
+        case "7":
+            controller.viewStakeholders();
+            break;
+
+        case "8":
+            controller.checkMissingInformation();
+            break;
+
+        case "9":
+            controller.startAssessment();
+            break;
+
+        case "10":
+            controller.submitAssessment();
+            break;
+
+        case "11":
+            controller.reviewAssessment();
+            break;
+
+        case "12":
+            controller.generateReport();
+            break;
+
+        case "13":
+            controller.setCurrentRole(selectRole());
+            break;
+
+        case "0":
+            System.out.println("\nThank you for using the system!");
+            running = false;
+            break;
+
+        default:
+            System.out.println("Invalid option. Please try again.");
+    }
     }
 
     private UserRole selectRole() {
