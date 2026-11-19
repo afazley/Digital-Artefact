@@ -7,6 +7,7 @@ import model.ImpactAssessment;
 import model.ProjectChange;
 import model.Risk;
 import model.Stakeholder;
+import model.UserRole;
 import report.ReportGenerator;
 import service.AssessmentService;
 
@@ -15,6 +16,8 @@ public class ImpactAssessmentApp {
     public static void main(String[] args) {
 
         Scanner scanner = new Scanner(System.in);
+        UserRole currentRole = selectRole(scanner);
+        System.out.println("\nLogged in as: " + currentRole);
         AssessmentService service = new AssessmentService();
 
         List<ImpactAssessment> assessments = new ArrayList<>();
@@ -37,6 +40,7 @@ public class ImpactAssessmentApp {
             System.out.println("8. View stakeholders");
             System.out.println("9. View all assessments");
             System.out.println("10. Select assessment");
+            System.out.println("11. Switch user role");
 
             System.out.print("Enter your choice: ");
             String choice = scanner.nextLine().trim();
@@ -183,7 +187,11 @@ public class ImpactAssessmentApp {
                     }
 
                     break;
-
+                
+                case "11":
+                    currentRole = selectRole(scanner);
+                    break;
+                    
                 default:
                     System.out.println("Invalid choice. Please try again.");
             }
@@ -191,6 +199,33 @@ public class ImpactAssessmentApp {
 
         scanner.close();
     }
+
+    public static UserRole selectRole(Scanner scanner) {
+
+    while (true) {
+        System.out.println("\n===============================");
+        System.out.println("       SELECT USER ROLE");
+        System.out.println("===============================");
+        System.out.println("1. Employee");
+        System.out.println("2. Senior Manager");
+
+        System.out.print("Select your role: ");
+        String choice = scanner.nextLine().trim();
+
+        switch (choice) {
+            case "1":
+                System.out.println("Employee mode activated.");
+                return UserRole.EMPLOYEE;
+
+            case "2":
+                System.out.println("Senior Manager mode activated.");
+                return UserRole.MANAGER;
+
+            default:
+                System.out.println("Invalid choice. Please try again.");
+        }
+    }
+}
 
     public static Risk addRisk(Scanner scanner) {
 
