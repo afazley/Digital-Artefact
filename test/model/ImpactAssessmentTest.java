@@ -52,18 +52,36 @@ public class ImpactAssessmentTest {
 
     @Test
     void assessmentWithoutRisksIsIncomplete() {
-        ImpactAssessment assessment = createCompleteAssessment();
+        ImpactAssessment assessment = new ImpactAssessment();
 
-        assessment.getRisks().clear();
+        assessment.setProjectChange(new ProjectChange(
+                "Website Migration",
+                "Move website to new servers",
+                "Improve reliability",
+                "15/12/2026"
+        ));
+
+        assessment.addStakeholder(
+                new Stakeholder("Sarah", "Manager", "IT")
+        );
 
         assertFalse(assessment.isComplete());
     }
 
     @Test
     void assessmentWithoutStakeholdersIsIncomplete() {
-        ImpactAssessment assessment = createCompleteAssessment();
+        ImpactAssessment assessment = new ImpactAssessment();
 
-        assessment.getStakeholders().clear();
+        assessment.setProjectChange(new ProjectChange(
+                "Website Migration",
+                "Move website to new servers",
+                "Improve reliability",
+                "15/12/2026"
+        ));
+
+        assessment.addRisk(
+                new Risk("Downtime", 4, 5, "Rollback plan")
+        );
 
         assertFalse(assessment.isComplete());
     }
@@ -167,4 +185,64 @@ public class ImpactAssessmentTest {
                 assessment.getStatus()
         );
     }
+
+
+    @Test
+    void approvedAssessmentCannotAddRisks() {
+
+        // Arrange: create a complete assessment.
+        ImpactAssessment assessment = createCompleteAssessment();
+
+        // Move it through the approval workflow.
+        assessment.startProgress();
+        assessment.submitForApproval();
+        assessment.reviewAssessment(AssessmentStatus.APPROVED);
+
+        // Record the number of risks before attempting a change.
+        int originalRiskCount = assessment.getRisks().size();
+
+        // Act: attempt to add a risk after approval.
+        assessment.addRisk(
+                new Risk("New security risk", 5, 5, "Security testing")
+        );
+
+        // Assert: the approved assessment should remain unchanged.
+        assertEquals(originalRiskCount, assessment.getRisks().size());
+    }
+
+    @Test
+    void approvedAssessmentCannotAddStakeholders() {
+
+        ImpactAssessment assessment = createCompleteAssessment();
+
+        assessment.startProgress();
+        assessment.submitForApproval();
+        assessment.reviewAssessment(AssessmentStatus.APPROVED);
+
+        int originalStakeholderCount =
+                assessment.getStakeholders().size();
+
+        assessment.addStakeholder(
+                new Stakeholder("James", "Developer", "IT")
+        );
+
+        assertEquals(
+                originalStakeholderCount,
+                assessment.getStakeholders().size()
+        );
+    }
+
+    @Test
+    void approvedAssessmentCannotBeModifiedThroughRiskList() {
+        ImpactAssessment assessment = createCompleteAssessment();
+
+        assessment.startProgress();
+        assessment.submitForApproval();
+        assessment.reviewAssessment(AssessmentStatus.APPROVED);
+
+        assertThrows(UnsupportedOperationException.class, () -> {
+            assessment.getRisks().clear();
+        });
+    }
+
 }
