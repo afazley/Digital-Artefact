@@ -229,11 +229,11 @@ public class AssessmentController {
                 return;
         }
 
-        if (service.reviewAssessment(selectedAssessment, decision)) {
-            System.out.println(
-                    "Assessment status updated to: "
-                    + selectedAssessment.getStatus()
-            );
-        }
+        if (service.reviewAssessment(
+                selectedAssessment, decision, currentRole)) {            System.out.println(
+                        "Assessment status updated to: "
+                        + selectedAssessment.getStatus()
+                );
+            }
     }
 }

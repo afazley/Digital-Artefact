@@ -7,6 +7,10 @@ import java.util.List;
 
 import model.ImpactAssessment;
 import model.Risk;
+import model.AssessmentStatus;
+import model.ProjectChange;
+import model.Stakeholder;
+import model.UserRole;
 
 public class AssessmentServiceTest {
 
@@ -79,4 +83,103 @@ public class AssessmentServiceTest {
         assertSame(low, assessment.getRisks().get(0));
         assertSame(high, assessment.getRisks().get(1));
     }
+
+
+    private ImpactAssessment createPendingAssessment() {
+
+        ImpactAssessment assessment = new ImpactAssessment();
+
+        assessment.setProjectChange(new ProjectChange(
+                "Website Migration",
+                "Move website to new servers",
+                "Improve reliability",
+                "15/12/2026"
+        ));
+
+        assessment.addRisk(
+                new Risk("Downtime", 4, 5, "Rollback")
+        );
+
+        assessment.addStakeholder(
+                new Stakeholder("Sarah", "Manager", "IT")
+        );
+
+        assessment.startProgress();
+        assessment.submitForApproval();
+
+        return assessment;
+    }
+
+    @Test
+    void employeeCannotApproveAssessment() {
+
+        ImpactAssessment assessment = createPendingAssessment();
+
+        boolean result = service.reviewAssessment(
+                assessment,
+                AssessmentStatus.APPROVED,
+                UserRole.EMPLOYEE
+        );
+
+        assertFalse(result);
+        assertEquals(
+                AssessmentStatus.PENDING_APPROVAL,
+                assessment.getStatus()
+        );
+    }
+
+    @Test
+    void managerCanApproveAssessment() {
+
+        ImpactAssessment assessment = createPendingAssessment();
+
+        boolean result = service.reviewAssessment(
+                assessment,
+                AssessmentStatus.APPROVED,
+                UserRole.MANAGER
+        );
+
+        assertTrue(result);
+        assertEquals(
+                AssessmentStatus.APPROVED,
+                assessment.getStatus()
+        );
+    }
+
+    @Test
+    void managerCannotApproveDraftAssessment() {
+
+        ImpactAssessment assessment = new ImpactAssessment();
+
+        boolean result = service.reviewAssessment(
+                assessment,
+                AssessmentStatus.APPROVED,
+                UserRole.MANAGER
+        );
+
+        assertFalse(result);
+        assertEquals(
+                AssessmentStatus.DRAFT,
+                assessment.getStatus()
+        );
+    }
+
+    @Test
+    void missingRoleCannotApproveAssessment() {
+
+        ImpactAssessment assessment = createPendingAssessment();
+
+        boolean result = service.reviewAssessment(
+                assessment,
+                AssessmentStatus.APPROVED,
+                null
+        );
+
+        assertFalse(result);
+        assertEquals(
+                AssessmentStatus.PENDING_APPROVAL,
+                assessment.getStatus()
+        );
+    }
+
 }

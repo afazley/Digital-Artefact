@@ -6,6 +6,8 @@ import model.ImpactAssessment;
 import model.ProjectChange;
 import model.Risk;
 import model.Stakeholder;
+import model.UserRole;
+
 public class AssessmentService {
 
     public ImpactAssessment createAssessment(
@@ -88,7 +90,24 @@ public class AssessmentService {
 
     public boolean reviewAssessment(
             ImpactAssessment assessment,
-            AssessmentStatus decision) {
+            AssessmentStatus decision,
+            UserRole role) {
+
+        // Only managers can review assessments.
+        if (role != UserRole.MANAGER) {
+            return false;
+        }
+
+        // A selected assessment must exist.
+        if (assessment == null) {
+            return false;
+        }
+
+        // The assessment must be awaiting approval.
+        if (assessment.getStatus()
+                != AssessmentStatus.PENDING_APPROVAL) {
+            return false;
+        }
 
         return assessment.reviewAssessment(decision);
     }
