@@ -1,273 +1,256 @@
 package service;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-import java.util.ArrayList;
-import model.ProjectChange;
-import model.ImpactAssessment;
-import model.Risk;
 import model.AssessmentStatus;
+import model.ImpactAssessment;
+import model.ProjectChange;
+import model.Risk;
 import model.Stakeholder;
 import model.UserRole;
 
 public class AssessmentServiceTest {
 
-    private final AssessmentService service = new AssessmentService();
+        private final AssessmentService service = new AssessmentService();
 
-    @Test
-    void risksAreSortedHighestFirst() {
-        ImpactAssessment assessment = new ImpactAssessment();
+        @Test
+        void risksAreSortedHighestFirst() {
+                ImpactAssessment assessment = new ImpactAssessment();
 
-        assessment.addRisk(new Risk("Low", 2, 2, "Monitor"));
-        assessment.addRisk(new Risk("High", 5, 5, "Rollback"));
-        assessment.addRisk(new Risk("Medium", 3, 3, "Training"));
+                assessment.addRisk(new Risk("Low", 2, 2, "Monitor"));
+                assessment.addRisk(new Risk("High", 5, 5, "Rollback"));
+                assessment.addRisk(new Risk("Medium", 3, 3, "Training"));
 
-        List<Risk> sorted = service.getSortedRisks(assessment);
+                List<Risk> sorted = service.getSortedRisks(assessment);
 
-        assertEquals(25, sorted.get(0).calculateRiskScore());
-        assertEquals(9, sorted.get(1).calculateRiskScore());
-        assertEquals(4, sorted.get(2).calculateRiskScore());
-    }
+                assertEquals(25, sorted.get(0).calculateRiskScore());
+                assertEquals(9, sorted.get(1).calculateRiskScore());
+                assertEquals(4, sorted.get(2).calculateRiskScore());
+        }
 
-    @Test
-    void emptyRiskListReturnsEmptyList() {
-        ImpactAssessment assessment = new ImpactAssessment();
+        @Test
+        void emptyRiskListReturnsEmptyList() {
+                ImpactAssessment assessment = new ImpactAssessment();
 
-        List<Risk> sorted = service.getSortedRisks(assessment);
+                List<Risk> sorted = service.getSortedRisks(assessment);
 
-        assertTrue(sorted.isEmpty());
-    }
+                assertTrue(sorted.isEmpty());
+        }
 
-    @Test
-    void singleRiskRemainsUnchanged() {
-        ImpactAssessment assessment = new ImpactAssessment();
+        @Test
+        void singleRiskRemainsUnchanged() {
+                ImpactAssessment assessment = new ImpactAssessment();
 
-        assessment.addRisk(new Risk("Downtime", 4, 5, "Backup"));
+                assessment.addRisk(new Risk("Downtime", 4, 5, "Backup"));
 
-        List<Risk> sorted = service.getSortedRisks(assessment);
+                List<Risk> sorted = service.getSortedRisks(assessment);
 
-        assertEquals(1, sorted.size());
-        assertEquals(20, sorted.get(0).calculateRiskScore());
-    }
+                assertEquals(1, sorted.size());
+                assertEquals(20, sorted.get(0).calculateRiskScore());
+        }
 
-    @Test
-    void equalRiskScoresPreserveOriginalOrder() {
-        ImpactAssessment assessment = new ImpactAssessment();
+        @Test
+        void equalRiskScoresPreserveOriginalOrder() {
+                ImpactAssessment assessment = new ImpactAssessment();
 
-        Risk first = new Risk("First risk", 2, 3, "Monitor");
-        Risk second = new Risk("Second risk", 3, 2, "Training");
+                Risk first = new Risk("First risk", 2, 3, "Monitor");
+                Risk second = new Risk("Second risk", 3, 2, "Training");
 
-        assessment.addRisk(first);
-        assessment.addRisk(second);
+                assessment.addRisk(first);
+                assessment.addRisk(second);
 
-        List<Risk> sorted = service.getSortedRisks(assessment);
+                List<Risk> sorted = service.getSortedRisks(assessment);
 
-        assertSame(first, sorted.get(0));
-        assertSame(second, sorted.get(1));
-    }
+                assertSame(first, sorted.get(0));
+                assertSame(second, sorted.get(1));
+        }
 
-    @Test
-    void sortingDoesNotModifyOriginalList() {
-        ImpactAssessment assessment = new ImpactAssessment();
+        @Test
+        void sortingDoesNotModifyOriginalList() {
+                ImpactAssessment assessment = new ImpactAssessment();
 
-        Risk low = new Risk("Low risk", 1, 2, "Monitor");
-        Risk high = new Risk("High risk", 5, 5, "Rollback");
+                Risk low = new Risk("Low risk", 1, 2, "Monitor");
+                Risk high = new Risk("High risk", 5, 5, "Rollback");
 
-        assessment.addRisk(low);
-        assessment.addRisk(high);
+                assessment.addRisk(low);
+                assessment.addRisk(high);
 
-        service.getSortedRisks(assessment);
+                service.getSortedRisks(assessment);
 
-        assertSame(low, assessment.getRisks().get(0));
-        assertSame(high, assessment.getRisks().get(1));
-    }
+                assertSame(low, assessment.getRisks().get(0));
+                assertSame(high, assessment.getRisks().get(1));
+        }
 
+        private ImpactAssessment createPendingAssessment() {
 
-    private ImpactAssessment createPendingAssessment() {
+                ImpactAssessment assessment = new ImpactAssessment();
 
-        ImpactAssessment assessment = new ImpactAssessment();
+                assessment.setProjectChange(new ProjectChange(
+                                "Website Migration",
+                                "Move website to new servers",
+                                "Improve reliability",
+                                "15/12/2026"));
 
-        assessment.setProjectChange(new ProjectChange(
-                "Website Migration",
-                "Move website to new servers",
-                "Improve reliability",
-                "15/12/2026"
-        ));
+                assessment.addRisk(
+                                new Risk("Downtime", 4, 5, "Rollback"));
 
-        assessment.addRisk(
-                new Risk("Downtime", 4, 5, "Rollback")
-        );
+                assessment.addStakeholder(
+                                new Stakeholder("Sarah", "Manager", "IT"));
 
-        assessment.addStakeholder(
-                new Stakeholder("Sarah", "Manager", "IT")
-        );
+                assessment.startProgress();
+                assessment.submitForApproval();
 
-        assessment.startProgress();
-        assessment.submitForApproval();
+                return assessment;
+        }
 
-        return assessment;
-    }
+        @Test
+        void employeeCannotApproveAssessment() {
 
-    @Test
-    void employeeCannotApproveAssessment() {
+                ImpactAssessment assessment = createPendingAssessment();
 
-        ImpactAssessment assessment = createPendingAssessment();
-
-        boolean result = service.reviewAssessment(
-                assessment,
-                AssessmentStatus.APPROVED,
-                UserRole.EMPLOYEE
-        );
-
-        assertFalse(result);
-        assertEquals(
-                AssessmentStatus.PENDING_APPROVAL,
-                assessment.getStatus()
-        );
-    }
-
-    @Test
-    void managerCanApproveAssessment() {
-
-        ImpactAssessment assessment = createPendingAssessment();
-
-        boolean result = service.reviewAssessment(
-                assessment,
-                AssessmentStatus.APPROVED,
-                UserRole.MANAGER
-        );
-
-        assertTrue(result);
-        assertEquals(
-                AssessmentStatus.APPROVED,
-                assessment.getStatus()
-        );
-    }
-
-    @Test
-    void managerCannotApproveDraftAssessment() {
-
-        ImpactAssessment assessment = new ImpactAssessment();
-
-        boolean result = service.reviewAssessment(
-                assessment,
-                AssessmentStatus.APPROVED,
-                UserRole.MANAGER
-        );
-
-        assertFalse(result);
-        assertEquals(
-                AssessmentStatus.DRAFT,
-                assessment.getStatus()
-        );
-    }
-
-    @Test
-    void missingRoleCannotApproveAssessment() {
-
-        ImpactAssessment assessment = createPendingAssessment();
-
-        boolean result = service.reviewAssessment(
-                assessment,
-                AssessmentStatus.APPROVED,
-                null
-        );
-
-        assertFalse(result);
-        assertEquals(
-                AssessmentStatus.PENDING_APPROVAL,
-                assessment.getStatus()
-        );
-    }
-
-
-    @Test
-    void multipleAssessmentsCanBeStored() {
-
-        List<ImpactAssessment> assessments = new ArrayList<>();
-
-        ImpactAssessment first = service.createAssessment(
-                "Website Migration",
-                "Move website",
-                "Improve reliability",
-                "15/12/2026"
-        );
-
-        ImpactAssessment second = service.createAssessment(
-                "Database Upgrade",
-                "Upgrade database",
-                "Improve performance",
-                "20/12/2026"
-        );
-
-        service.addAssessment(assessments, first);
-        service.addAssessment(assessments, second);
-
-        assertEquals(2, assessments.size());
-        assertSame(first, assessments.get(0));
-        assertSame(second, assessments.get(1));
-    }
-
-    @Test
-    void assessmentsMaintainSeparateRiskLists() {
-
-        ImpactAssessment first = service.createAssessment(
-                "Website Migration",
-                "Move website",
-                "Improve reliability",
-                "15/12/2026"
-        );
-
-        ImpactAssessment second = service.createAssessment(
-                "Database Upgrade",
-                "Upgrade database",
-                "Improve performance",
-                "20/12/2026"
-        );
-
-        service.addRisk(
-                first,
-                new Risk("System downtime", 4, 5, "Rollback")
-        );
-
-        assertEquals(1, first.getRisks().size());
-        assertEquals(0, second.getRisks().size());
-    }
-
-    @Test
-    void creatingNewAssessmentDoesNotOverwritePreviousOne() {
-
-        List<ImpactAssessment> assessments = new ArrayList<>();
-
-        ImpactAssessment first = service.createAssessment(
-                "Website Migration",
-                "Move website",
-                "Improve reliability",
-                "15/12/2026"
-        );
-
-        service.addAssessment(assessments, first);
-
-        ImpactAssessment second = service.createAssessment(
-                "Database Upgrade",
-                "Upgrade database",
-                "Improve performance",
-                "20/12/2026"
-        );
-
-        service.addAssessment(assessments, second);
-
-        assertEquals(
-                "Website Migration",
-                assessments.get(0).getProjectChange().getProjectName()
-        );
-
-        assertEquals(
-                "Database Upgrade",
-                assessments.get(1).getProjectChange().getProjectName()
-        );
-    }
+                boolean result = service.reviewAssessment(
+                                assessment,
+                                AssessmentStatus.APPROVED,
+                                UserRole.EMPLOYEE);
+
+                assertFalse(result);
+                assertEquals(
+                                AssessmentStatus.PENDING_APPROVAL,
+                                assessment.getStatus());
+        }
+
+        @Test
+        void managerCanApproveAssessment() {
+
+                ImpactAssessment assessment = createPendingAssessment();
+
+                boolean result = service.reviewAssessment(
+                                assessment,
+                                AssessmentStatus.APPROVED,
+                                UserRole.MANAGER);
+
+                assertTrue(result);
+                assertEquals(
+                                AssessmentStatus.APPROVED,
+                                assessment.getStatus());
+        }
+
+        @Test
+        void managerCannotApproveDraftAssessment() {
+
+                ImpactAssessment assessment = new ImpactAssessment();
+
+                boolean result = service.reviewAssessment(
+                                assessment,
+                                AssessmentStatus.APPROVED,
+                                UserRole.MANAGER);
+
+                assertFalse(result);
+                assertEquals(
+                                AssessmentStatus.DRAFT,
+                                assessment.getStatus());
+        }
+
+        @Test
+        void missingRoleCannotApproveAssessment() {
+
+                ImpactAssessment assessment = createPendingAssessment();
+
+                boolean result = service.reviewAssessment(
+                                assessment,
+                                AssessmentStatus.APPROVED,
+                                null);
+
+                assertFalse(result);
+                assertEquals(
+                                AssessmentStatus.PENDING_APPROVAL,
+                                assessment.getStatus());
+        }
+
+        @Test
+        void multipleAssessmentsCanBeStored() {
+
+                List<ImpactAssessment> assessments = new ArrayList<>();
+
+                ImpactAssessment first = service.createAssessment(
+                                "Website Migration",
+                                "Move website",
+                                "Improve reliability",
+                                "15/12/2026");
+
+                ImpactAssessment second = service.createAssessment(
+                                "Database Upgrade",
+                                "Upgrade database",
+                                "Improve performance",
+                                "20/12/2026");
+
+                service.addAssessment(assessments, first);
+                service.addAssessment(assessments, second);
+
+                assertEquals(2, assessments.size());
+                assertSame(first, assessments.get(0));
+                assertSame(second, assessments.get(1));
+        }
+
+        @Test
+        void assessmentsMaintainSeparateRiskLists() {
+
+                ImpactAssessment first = service.createAssessment(
+                                "Website Migration",
+                                "Move website",
+                                "Improve reliability",
+                                "15/12/2026");
+
+                ImpactAssessment second = service.createAssessment(
+                                "Database Upgrade",
+                                "Upgrade database",
+                                "Improve performance",
+                                "20/12/2026");
+
+                service.addRisk(
+                                first,
+                                new Risk("System downtime", 4, 5, "Rollback"));
+
+                assertEquals(1, first.getRisks().size());
+                assertEquals(0, second.getRisks().size());
+        }
+
+        @Test
+        void creatingNewAssessmentDoesNotOverwritePreviousOne() {
+
+                List<ImpactAssessment> assessments = new ArrayList<>();
+
+                ImpactAssessment first = service.createAssessment(
+                                "Website Migration",
+                                "Move website",
+                                "Improve reliability",
+                                "15/12/2026");
+
+                service.addAssessment(assessments, first);
+
+                ImpactAssessment second = service.createAssessment(
+                                "Database Upgrade",
+                                "Upgrade database",
+                                "Improve performance",
+                                "20/12/2026");
+
+                service.addAssessment(assessments, second);
+
+                assertEquals(
+                                "Website Migration",
+                                assessments.get(0).getProjectChange().getProjectName());
+
+                assertEquals(
+                                "Database Upgrade",
+                                assessments.get(1).getProjectChange().getProjectName());
+        }
 
 }

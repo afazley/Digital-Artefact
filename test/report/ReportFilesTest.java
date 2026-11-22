@@ -1,7 +1,10 @@
 
 package report;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -25,16 +28,13 @@ public class ReportFilesTest {
                 "Website Migration",
                 "Move website",
                 "Improve reliability",
-                "15/12/2026"
-        ));
+                "15/12/2026"));
 
         assessment.addRisk(
-                new Risk("Downtime", 4, 5, "Rollback")
-        );
+                new Risk("Downtime", 4, 5, "Rollback"));
 
         assessment.addStakeholder(
-                new Stakeholder("Sarah", "Manager", "IT")
-        );
+                new Stakeholder("Sarah", "Manager", "IT"));
 
         assessment.startProgress();
         assessment.submitForApproval();
@@ -47,8 +47,7 @@ public class ReportFilesTest {
     void generatedReportIncludesApprovalStatus() throws Exception {
 
         Path reportFile = ReportGenerator.generateReport(
-                createApprovedAssessment()
-        );
+                createApprovedAssessment());
 
         assertNotNull(reportFile);
 
@@ -58,8 +57,7 @@ public class ReportFilesTest {
             String content = Files.readString(reportFile);
 
             assertTrue(
-                    content.contains("Assessment status: APPROVED")
-            );
+                    content.contains("Assessment status: APPROVED"));
 
         } finally {
             Files.deleteIfExists(reportFile);
@@ -85,8 +83,7 @@ public class ReportFilesTest {
 
             assertEquals(
                     Files.readString(first),
-                    Files.readString(second)
-            );
+                    Files.readString(second));
 
         } finally {
             Files.deleteIfExists(first);

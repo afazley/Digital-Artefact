@@ -1,13 +1,20 @@
 package app;
 
-import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
-import model.*;
+import org.junit.jupiter.api.Test;
+
+import model.AssessmentStatus;
+import model.ImpactAssessment;
+import model.ProjectChange;
+import model.Risk;
+import model.Stakeholder;
 import service.AssessmentService;
 
 public class AssessmentValidationTest {
@@ -18,7 +25,8 @@ public class AssessmentValidationTest {
     @Test
     void blankProjectFieldsAndBadDatesRequireNewInput() {
         AssessmentInput input = new AssessmentInput(scannerFor(
-                " \nWebsite Migration\n\nMove website\n   \nImprove reliability\nnot-a-date\n31/02/2027\n01/03/2027\n"), new AssessmentService());
+                " \nWebsite Migration\n\nMove website\n   \nImprove reliability\nnot-a-date\n31/02/2027\n01/03/2027\n"),
+                new AssessmentService());
         ImpactAssessment a = input.createAssessment();
         assertEquals("Website Migration", a.getProjectChange().getProjectName());
         assertEquals("01/03/2027", a.getProjectChange().getImplementationDate());

@@ -1,12 +1,13 @@
 
 package app;
 
-import static org.junit.jupiter.api.Assertions.*;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
+
+import org.junit.jupiter.api.Test;
 
 import model.Risk;
 import service.AssessmentService;
@@ -17,22 +18,19 @@ public class AssessmentInputTest {
     private AssessmentInput createInput(String userInput) {
 
         ByteArrayInputStream stream = new ByteArrayInputStream(
-                userInput.getBytes(StandardCharsets.UTF_8)
-        );
+                userInput.getBytes(StandardCharsets.UTF_8));
 
         Scanner scanner = new Scanner(stream);
 
         return new AssessmentInput(
-                scanner, new AssessmentService()
-        );
+                scanner, new AssessmentService());
     }
 
     @Test
     void acceptsMinimumAndMaximumRatings() {
 
         AssessmentInput input = createInput(
-                "System downtime\n1\n5\nRollback plan\n"
-        );
+                "System downtime\n1\n5\nRollback plan\n");
 
         Risk risk = input.addRisk();
 
@@ -45,8 +43,7 @@ public class AssessmentInputTest {
     void invalidTextInputPromptsForAnotherNumber() {
 
         AssessmentInput input = createInput(
-                "Data loss\nabc\n4\n3\nBackup plan\n"
-        );
+                "Data loss\nabc\n4\n3\nBackup plan\n");
 
         Risk risk = input.addRisk();
 
@@ -59,8 +56,7 @@ public class AssessmentInputTest {
     void outOfRangeRatingsAreRejected() {
 
         AssessmentInput input = createInput(
-                "Security risk\n0\n6\n5\n-1\n3\nSecurity review\n"
-        );
+                "Security risk\n0\n6\n5\n-1\n3\nSecurity review\n");
 
         Risk risk = input.addRisk();
 
