@@ -57,41 +57,48 @@ public class AssessmentDisplay {
         }
     }
 
-    public void checkMissingInformation(
-            ImpactAssessment assessment) {
-
+    public void checkMissingInformation(ImpactAssessment assessment) {
         System.out.println("\n--- MISSING INFORMATION CHECK ---");
 
         ProjectChange change = assessment.getProjectChange();
         boolean missing = false;
 
         if (change == null) {
-            System.out.println(
-                    "- Project assessment has not been created."
-            );
+            System.out.println("- Project assessment has not been created.");
             missing = true;
-
         } else if (!change.isComplete()) {
-            System.out.println(
-                    "- Some project details are missing."
-            );
+            System.out.println("- Some project details are missing or the date is invalid.");
             missing = true;
         }
 
         if (assessment.getRisks().isEmpty()) {
             System.out.println("- No risks have been added.");
             missing = true;
+        } else {
+            for (Risk risk : assessment.getRisks()) {
+                if (risk == null || !risk.isComplete()) {
+                    System.out.println("- A risk has missing or invalid details.");
+                    missing = true;
+                    break;
+                }
+            }
         }
 
         if (assessment.getStakeholders().isEmpty()) {
             System.out.println("- No stakeholders have been added.");
             missing = true;
+        } else {
+            for (Stakeholder stakeholder : assessment.getStakeholders()) {
+                if (stakeholder == null || !stakeholder.isComplete()) {
+                    System.out.println("- A stakeholder has missing details.");
+                    missing = true;
+                    break;
+                }
+            }
         }
 
         if (!missing) {
-            System.out.println(
-                    "All required information has been provided."
-            );
+            System.out.println("All required information has been provided.");
         }
     }
 

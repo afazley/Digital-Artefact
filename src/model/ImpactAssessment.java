@@ -67,10 +67,25 @@ public class ImpactAssessment {
     }
 
     public boolean isComplete() {
-        return projectChange != null
-                && projectChange.isComplete()
-                && !risks.isEmpty()
-                && !stakeholders.isEmpty();
+        if (projectChange == null || !projectChange.isComplete()
+                || risks.isEmpty() || stakeholders.isEmpty()) {
+            return false;
+        }
+
+        // Check the contents, not just whether the lists have entries.
+        for (Risk risk : risks) {
+            if (risk == null || !risk.isComplete()) {
+                return false;
+            }
+        }
+
+        for (Stakeholder stakeholder : stakeholders) {
+            if (stakeholder == null || !stakeholder.isComplete()) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public AssessmentStatus getStatus() {

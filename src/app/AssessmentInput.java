@@ -1,8 +1,10 @@
+
 package app;
 
 import java.util.Scanner;
 
 import model.ImpactAssessment;
+import model.ProjectChange;
 import model.Risk;
 import model.Stakeholder;
 import service.AssessmentService;
@@ -20,17 +22,10 @@ public class AssessmentInput {
     public ImpactAssessment createAssessment() {
         System.out.println("\n--- CREATE NEW ASSESSMENT ---");
 
-        System.out.print("Enter project name: ");
-        String projectName = scanner.nextLine();
-
-        System.out.print("Describe the proposed change: ");
-        String description = scanner.nextLine();
-
-        System.out.print("Why is this change needed? ");
-        String reason = scanner.nextLine();
-
-        System.out.print("Enter proposed implementation date: ");
-        String date = scanner.nextLine();
+        String projectName = readRequiredText("Enter project name: ");
+        String description = readRequiredText("Describe the proposed change: ");
+        String reason = readRequiredText("Why is this change needed? ");
+        String date = readValidDate();
 
         return service.createAssessment(
                 projectName, description, reason, date
@@ -40,41 +35,49 @@ public class AssessmentInput {
     public Risk addRisk() {
         System.out.println("\n--- ADD NEW RISK ---");
 
-        System.out.print("Enter risk description: ");
-        String description = scanner.nextLine();
-
+        String description = readRequiredText("Enter risk description: ");
         int probability = readRiskRating("probability");
         int impact = readRiskRating("impact");
+        String mitigation = readRequiredText("Enter mitigation: ");
 
-        System.out.print("Enter mitigation: ");
-        String mitigation = scanner.nextLine();
-
-        Risk risk = new Risk(
-                description, probability, impact, mitigation
-        );
-
-        System.out.println("Risk successfully saved!");
-        System.out.println("Risk score: " + risk.calculateRiskScore());
-        System.out.println("Risk level: " + risk.getRiskLevel());
-
-        return risk;
+        return new Risk(description, probability, impact, mitigation);
     }
 
     public Stakeholder addStakeholder() {
         System.out.println("\n--- ADD STAKEHOLDER ---");
 
-        System.out.print("Enter stakeholder name: ");
-        String name = scanner.nextLine();
-
-        System.out.print("Enter their role: ");
-        String role = scanner.nextLine();
-
-        System.out.print("Enter their department: ");
-        String department = scanner.nextLine();
-
-        System.out.println("Stakeholder successfully saved!");
+        String name = readRequiredText("Enter stakeholder name: ");
+        String role = readRequiredText("Enter their role: ");
+        String department = readRequiredText("Enter their department: ");
 
         return new Stakeholder(name, role, department);
+    }
+
+    // Repeats the question if the user enters nothing or just spaces.
+    private String readRequiredText(String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            String value = scanner.nextLine().trim();
+
+            if (!value.isEmpty()) {
+                return value;
+            }
+
+            System.out.println("This field cannot be empty. Please try again.");
+        }
+    }
+
+    private String readValidDate() {
+        while (true) {
+            System.out.print("Enter proposed implementation date (dd/MM/yyyy): ");
+            String value = scanner.nextLine().trim();
+
+            if (ProjectChange.isValidImplementationDate(value)) {
+                return value;
+            }
+
+            System.out.println("Enter a real date in dd/MM/yyyy format.");
+        }
     }
 
     private int readRiskRating(String ratingName) {
@@ -82,22 +85,16 @@ public class AssessmentInput {
             System.out.print("Enter " + ratingName + " (1-5): ");
 
             try {
-                int rating = Integer.parseInt(
-                        scanner.nextLine().trim()
-                );
+                int rating = Integer.parseInt(scanner.nextLine().trim());
 
                 if (rating >= 1 && rating <= 5) {
                     return rating;
                 }
 
-                System.out.println(
-                        "Enter a number between 1 and 5."
-                );
+                System.out.println("Enter a number between 1 and 5.");
 
             } catch (NumberFormatException e) {
-                System.out.println(
-                        "Invalid input. Enter a whole number."
-                );
+                System.out.println("Invalid input. Enter a whole number.");
             }
         }
     }

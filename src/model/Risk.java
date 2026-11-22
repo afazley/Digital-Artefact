@@ -33,6 +33,13 @@ public class Risk {
         }
     }
 
+    public boolean isComplete() {
+    return description != null && !description.isBlank()
+            && mitigation != null && !mitigation.isBlank()
+            && probability >= 1 && probability <= 5
+            && impact >= 1 && impact <= 5;
+    }
+
     public String getDescription() {
     return description;
     }
@@ -48,4 +55,5 @@ public class Risk {
     public int getImpact() {
     return impact;
     }
+
 }

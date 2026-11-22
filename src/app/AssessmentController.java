@@ -3,6 +3,8 @@ package app;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import model.Risk;
+import model.Stakeholder;
 
 import model.AssessmentStatus;
 import model.ImpactAssessment;
@@ -56,6 +58,22 @@ public class AssessmentController {
         return true;
     }
 
+    private boolean hasEditableAssessment() {
+    if (!hasSelectedAssessment()) {
+        return false;
+    }
+
+    if (!selectedAssessment.isEditable()) {
+        System.out.println(
+                "Assessment cannot be edited while its status is "
+                + selectedAssessment.getStatus() + "."
+        );
+        return false;
+    }
+
+    return true;
+    }
+
     public void createAssessment() {
         selectedAssessment = input.createAssessment();
         service.addAssessment(assessments, selectedAssessment);
@@ -71,17 +89,27 @@ public class AssessmentController {
     }
 
     public void addRisk() {
-        if (hasSelectedAssessment()) {
-            service.addRisk(selectedAssessment, input.addRisk());
+        if (!hasEditableAssessment()) {
+            return;
         }
+
+        Risk risk = input.addRisk();
+        service.addRisk(selectedAssessment, risk);
+
+        System.out.println("Risk successfully saved!");
+        System.out.println("Risk score: " + risk.calculateRiskScore());
+        System.out.println("Risk level: " + risk.getRiskLevel());
     }
 
     public void addStakeholder() {
-        if (hasSelectedAssessment()) {
-            service.addStakeholder(
-                    selectedAssessment, input.addStakeholder()
-            );
+        if (!hasEditableAssessment()) {
+            return;
         }
+
+        Stakeholder stakeholder = input.addStakeholder();
+        service.addStakeholder(selectedAssessment, stakeholder);
+
+        System.out.println("Stakeholder successfully saved!");
     }
 
     public void checkMissingInformation() {
