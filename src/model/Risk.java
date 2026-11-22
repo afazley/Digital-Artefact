@@ -8,7 +8,7 @@ public class Risk {
     private String mitigation;
 
     public Risk(String description, int probability,
-                int impact, String mitigation) {
+            int impact, String mitigation) {
 
         this.description = description;
         this.probability = probability;
@@ -34,14 +34,14 @@ public class Risk {
     }
 
     public boolean isComplete() {
-    return description != null && !description.isBlank()
-            && mitigation != null && !mitigation.isBlank()
-            && probability >= 1 && probability <= 5
-            && impact >= 1 && impact <= 5;
+        return description != null && !description.isBlank()
+                && mitigation != null && !mitigation.isBlank()
+                && probability >= 1 && probability <= 5
+                && impact >= 1 && impact <= 5;
     }
 
     public String getDescription() {
-    return description;
+        return description;
     }
 
     public String getMitigation() {
@@ -49,11 +49,11 @@ public class Risk {
     }
 
     public int getProbability() {
-    return probability;
+        return probability;
     }
 
     public int getImpact() {
-    return impact;
+        return impact;
     }
 
 }

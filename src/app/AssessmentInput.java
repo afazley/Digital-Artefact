@@ -28,8 +28,7 @@ public class AssessmentInput {
         String date = readValidDate();
 
         return service.createAssessment(
-                projectName, description, reason, date
-        );
+                projectName, description, reason, date);
     }
 
     public Risk addRisk() {

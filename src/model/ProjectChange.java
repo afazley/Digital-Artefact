@@ -1,4 +1,5 @@
 package model;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -11,9 +12,8 @@ public class ProjectChange {
     private String reason;
     private String implementationDate;
 
-    private static final DateTimeFormatter DATE_FORMAT =
-        DateTimeFormatter.ofPattern("dd/MM/uuuu")
-                .withResolverStyle(ResolverStyle.STRICT);
+    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/uuuu")
+            .withResolverStyle(ResolverStyle.STRICT);
 
     public static boolean isValidImplementationDate(String date) {
         if (date == null || date.isBlank()) {
@@ -29,7 +29,7 @@ public class ProjectChange {
     }
 
     public ProjectChange(String projectName, String description,
-                         String reason, String implementationDate) {
+            String reason, String implementationDate) {
         this.projectName = projectName;
         this.description = description;
         this.reason = reason;

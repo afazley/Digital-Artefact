@@ -3,13 +3,12 @@ package app;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import model.Risk;
-import model.Stakeholder;
 
 import model.AssessmentStatus;
 import model.ImpactAssessment;
+import model.Risk;
+import model.Stakeholder;
 import model.UserRole;
-
 import report.ReportGenerator;
 import service.AssessmentService;
 
@@ -50,27 +49,25 @@ public class AssessmentController {
     private boolean hasSelectedAssessment() {
         if (selectedAssessment == null) {
             System.out.println(
-                    "Please create or select an assessment first."
-            );
+                    "Please create or select an assessment first.");
             return false;
         }
         return true;
     }
 
     private boolean hasEditableAssessment() {
-    if (!hasSelectedAssessment()) {
-        return false;
-    }
+        if (!hasSelectedAssessment()) {
+            return false;
+        }
 
-    if (!selectedAssessment.isEditable()) {
-        System.out.println(
-                "Assessment cannot be edited while its status is "
-                + selectedAssessment.getStatus() + "."
-        );
-        return false;
-    }
+        if (!selectedAssessment.isEditable()) {
+            System.out.println(
+                    "Assessment cannot be edited while its status is "
+                            + selectedAssessment.getStatus() + ".");
+            return false;
+        }
 
-    return true;
+        return true;
     }
 
     public void createAssessment() {
@@ -147,17 +144,15 @@ public class AssessmentController {
 
         try {
             int number = Integer.parseInt(
-                    scanner.nextLine().trim()
-            );
+                    scanner.nextLine().trim());
 
             if (number >= 1 && number <= assessments.size()) {
                 selectedAssessment = assessments.get(number - 1);
 
                 System.out.println(
                         "Selected assessment: "
-                        + selectedAssessment.getProjectChange()
-                                .getProjectName()
-                );
+                                + selectedAssessment.getProjectChange()
+                                        .getProjectName());
             } else {
                 System.out.println("Invalid assessment number.");
             }
@@ -177,8 +172,7 @@ public class AssessmentController {
         } else {
             System.out.println(
                     "Cannot start assessment from status: "
-                    + selectedAssessment.getStatus()
-            );
+                            + selectedAssessment.getStatus());
         }
     }
 
@@ -192,18 +186,15 @@ public class AssessmentController {
         } else {
             System.out.println(
                     "Submission failed. Assessment must be IN PROGRESS "
-                    + "and contain all required information."
-            );
+                            + "and contain all required information.");
         }
     }
-
 
     public void reviewAssessment() {
 
         if (currentRole != UserRole.MANAGER) {
             System.out.println(
-                    "Access denied. Only managers can review assessments."
-            );
+                    "Access denied. Only managers can review assessments.");
             return;
         }
 
@@ -211,12 +202,10 @@ public class AssessmentController {
             return;
         }
 
-        if (selectedAssessment.getStatus()
-                != AssessmentStatus.PENDING_APPROVAL) {
+        if (selectedAssessment.getStatus() != AssessmentStatus.PENDING_APPROVAL) {
 
             System.out.println(
-                    "Assessment must be PENDING APPROVAL before review."
-            );
+                    "Assessment must be PENDING APPROVAL before review.");
             return;
         }
 
@@ -233,8 +222,7 @@ public class AssessmentController {
         for (int i = 0; i < decisions.length; i++) {
             System.out.println(
                     (i + 1) + ". "
-                    + decisions[i].name().replace('_', ' ')
-            );
+                            + decisions[i].name().replace('_', ' '));
         }
 
         System.out.print("Enter decision: ");
@@ -256,14 +244,12 @@ public class AssessmentController {
 
                 System.out.println(
                         "Assessment status updated to: "
-                        + selectedAssessment.getStatus()
-                );
+                                + selectedAssessment.getStatus());
             }
 
         } catch (NumberFormatException e) {
             System.out.println(
-                    "Invalid input. Please enter a whole number."
-            );
+                    "Invalid input. Please enter a whole number.");
         }
     }
 

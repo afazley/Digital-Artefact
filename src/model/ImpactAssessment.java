@@ -58,8 +58,7 @@ public class ImpactAssessment {
     public void addStakeholder(Stakeholder stakeholder) {
         if (!isEditable()) {
             System.out.println(
-                    "Cannot add stakeholder. Assessment is " + status
-            );
+                    "Cannot add stakeholder. Assessment is " + status);
             return;
         }
 

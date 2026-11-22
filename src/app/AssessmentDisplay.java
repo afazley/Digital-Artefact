@@ -49,8 +49,7 @@ public class AssessmentDisplay {
         }
 
         for (int i = 0; i < assessment.getStakeholders().size(); i++) {
-            Stakeholder stakeholder =
-                    assessment.getStakeholders().get(i);
+            Stakeholder stakeholder = assessment.getStakeholders().get(i);
 
             System.out.println("\nStakeholder " + (i + 1));
             stakeholder.displayDetails();

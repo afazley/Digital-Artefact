@@ -1,6 +1,8 @@
 package service;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import model.AssessmentStatus;
 import model.ImpactAssessment;
 import model.ProjectChange;
@@ -22,8 +24,7 @@ public class AssessmentService {
                 projectName,
                 description,
                 reason,
-                implementationDate
-        );
+                implementationDate);
 
         assessment.setProjectChange(change);
 
@@ -44,11 +45,11 @@ public class AssessmentService {
     }
 
     public void addAssessment(
-        List<ImpactAssessment> assessments,
-        ImpactAssessment assessment) {
+            List<ImpactAssessment> assessments,
+            ImpactAssessment assessment) {
 
-    assessments.add(assessment);
-}
+        assessments.add(assessment);
+    }
 
     public void viewAllAssessments(List<ImpactAssessment> assessments) {
 
@@ -81,7 +82,7 @@ public class AssessmentService {
     }
 
     public boolean startAssessment(ImpactAssessment assessment) {
-    return assessment.startProgress();
+        return assessment.startProgress();
     }
 
     public boolean submitAssessment(ImpactAssessment assessment) {
@@ -104,8 +105,7 @@ public class AssessmentService {
         }
 
         // The assessment must be awaiting approval.
-        if (assessment.getStatus()
-                != AssessmentStatus.PENDING_APPROVAL) {
+        if (assessment.getStatus() != AssessmentStatus.PENDING_APPROVAL) {
             return false;
         }
 
@@ -114,26 +114,25 @@ public class AssessmentService {
 
     public List<Risk> getSortedRisks(ImpactAssessment assessment) {
 
-    // Copy the risks so the original list is not modified.
-    List<Risk> sortedRisks = new ArrayList<>(assessment.getRisks());
+        // Copy the risks so the original list is not modified.
+        List<Risk> sortedRisks = new ArrayList<>(assessment.getRisks());
 
-    // Bubble sort: highest risk score first.
-    for (int i = 0; i < sortedRisks.size() - 1; i++) {
+        // Bubble sort: highest risk score first.
+        for (int i = 0; i < sortedRisks.size() - 1; i++) {
 
-        for (int j = 0; j < sortedRisks.size() - i - 1; j++) {
+            for (int j = 0; j < sortedRisks.size() - i - 1; j++) {
 
-            Risk currentRisk = sortedRisks.get(j);
-            Risk nextRisk = sortedRisks.get(j + 1);
+                Risk currentRisk = sortedRisks.get(j);
+                Risk nextRisk = sortedRisks.get(j + 1);
 
-            if (currentRisk.calculateRiskScore()
-                    < nextRisk.calculateRiskScore()) {
+                if (currentRisk.calculateRiskScore() < nextRisk.calculateRiskScore()) {
 
-                sortedRisks.set(j, nextRisk);
-                sortedRisks.set(j + 1, currentRisk);
+                    sortedRisks.set(j, nextRisk);
+                    sortedRisks.set(j + 1, currentRisk);
+                }
             }
         }
-    }
 
-    return sortedRisks;
+        return sortedRisks;
     }
 }
