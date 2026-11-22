@@ -8,7 +8,6 @@ import model.Stakeholder;
 
 import model.AssessmentStatus;
 import model.ImpactAssessment;
-import model.ProjectChange;
 import model.UserRole;
 
 import report.ReportGenerator;
@@ -123,21 +122,7 @@ public class AssessmentController {
             return;
         }
 
-        ProjectChange change = selectedAssessment.getProjectChange();
-
-        if (change == null) {
-            System.out.println("No project details available.");
-            return;
-        }
-
-        ReportGenerator.generateReport(
-                change.getProjectName(),
-                change.getDescription(),
-                change.getReason(),
-                change.getImplementationDate(),
-                selectedAssessment.getRisks(),
-                selectedAssessment.getStakeholders()
-        );
+        ReportGenerator.generateReport(selectedAssessment);
     }
 
     public void viewStakeholders() {
