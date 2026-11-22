@@ -4,11 +4,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-
+import java.util.ArrayList;
+import model.ProjectChange;
 import model.ImpactAssessment;
 import model.Risk;
 import model.AssessmentStatus;
-import model.ProjectChange;
 import model.Stakeholder;
 import model.UserRole;
 
@@ -179,6 +179,94 @@ public class AssessmentServiceTest {
         assertEquals(
                 AssessmentStatus.PENDING_APPROVAL,
                 assessment.getStatus()
+        );
+    }
+
+
+    @Test
+    void multipleAssessmentsCanBeStored() {
+
+        List<ImpactAssessment> assessments = new ArrayList<>();
+
+        ImpactAssessment first = service.createAssessment(
+                "Website Migration",
+                "Move website",
+                "Improve reliability",
+                "15/12/2026"
+        );
+
+        ImpactAssessment second = service.createAssessment(
+                "Database Upgrade",
+                "Upgrade database",
+                "Improve performance",
+                "20/12/2026"
+        );
+
+        service.addAssessment(assessments, first);
+        service.addAssessment(assessments, second);
+
+        assertEquals(2, assessments.size());
+        assertSame(first, assessments.get(0));
+        assertSame(second, assessments.get(1));
+    }
+
+    @Test
+    void assessmentsMaintainSeparateRiskLists() {
+
+        ImpactAssessment first = service.createAssessment(
+                "Website Migration",
+                "Move website",
+                "Improve reliability",
+                "15/12/2026"
+        );
+
+        ImpactAssessment second = service.createAssessment(
+                "Database Upgrade",
+                "Upgrade database",
+                "Improve performance",
+                "20/12/2026"
+        );
+
+        service.addRisk(
+                first,
+                new Risk("System downtime", 4, 5, "Rollback")
+        );
+
+        assertEquals(1, first.getRisks().size());
+        assertEquals(0, second.getRisks().size());
+    }
+
+    @Test
+    void creatingNewAssessmentDoesNotOverwritePreviousOne() {
+
+        List<ImpactAssessment> assessments = new ArrayList<>();
+
+        ImpactAssessment first = service.createAssessment(
+                "Website Migration",
+                "Move website",
+                "Improve reliability",
+                "15/12/2026"
+        );
+
+        service.addAssessment(assessments, first);
+
+        ImpactAssessment second = service.createAssessment(
+                "Database Upgrade",
+                "Upgrade database",
+                "Improve performance",
+                "20/12/2026"
+        );
+
+        service.addAssessment(assessments, second);
+
+        assertEquals(
+                "Website Migration",
+                assessments.get(0).getProjectChange().getProjectName()
+        );
+
+        assertEquals(
+                "Database Upgrade",
+                assessments.get(1).getProjectChange().getProjectName()
         );
     }
 
