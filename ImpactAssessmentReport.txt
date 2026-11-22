@@ -3,27 +3,16 @@
 ==================================
 
 PROJECT DETAILS
-Project name: Test
-Change description: testing
-Reason for change: to test
-Implementation date: 20/11/2026
+Project name: Website Migration
+Change description: Move website
+Reason for change: Improve reliability
+Implementation date: 15/12/2026
 
 RISKS
-
-Risk 1
-Description: tets
-Probability: 3
-Impact: 2
-Score: 6
-Level: Medium
-Mitigation: no test
+No risks recorded.
 
 STAKEHOLDERS
-
-Stakeholder 1
-Name: amir
-Role: manager
-Department: ss
+No stakeholders recorded.
 
 ==================================
           END OF REPORT
