@@ -212,7 +212,9 @@ public class AssessmentController {
         }
     }
 
+
     public void reviewAssessment() {
+
         if (currentRole != UserRole.MANAGER) {
             System.out.println(
                     "Access denied. Only managers can review assessments."
@@ -233,35 +235,51 @@ public class AssessmentController {
             return;
         }
 
+        // Store the available manager decisions in a standard Java array.
+        AssessmentStatus[] decisions = {
+                AssessmentStatus.APPROVED,
+                AssessmentStatus.REJECTED,
+                AssessmentStatus.CHANGES_REQUIRED
+        };
+
         System.out.println("\n--- MANAGER REVIEW ---");
-        System.out.println("1. Approve");
-        System.out.println("2. Reject");
-        System.out.println("3. Request changes");
-        System.out.print("Enter decision: ");
 
-        String choice = scanner.nextLine().trim();
-        AssessmentStatus decision;
-
-        switch (choice) {
-            case "1":
-                decision = AssessmentStatus.APPROVED;
-                break;
-            case "2":
-                decision = AssessmentStatus.REJECTED;
-                break;
-            case "3":
-                decision = AssessmentStatus.CHANGES_REQUIRED;
-                break;
-            default:
-                System.out.println("Invalid review decision.");
-                return;
+        // Display the available options using the array.
+        for (int i = 0; i < decisions.length; i++) {
+            System.out.println(
+                    (i + 1) + ". "
+                    + decisions[i].name().replace('_', ' ')
+            );
         }
 
-        if (service.reviewAssessment(
-                selectedAssessment, decision, currentRole)) {            System.out.println(
+        System.out.print("Enter decision: ");
+        String input = scanner.nextLine().trim();
+
+        try {
+            int choice = Integer.parseInt(input);
+
+            if (choice < 1 || choice > decisions.length) {
+                System.out.println("Invalid review decision.");
+                return;
+            }
+
+            // Arrays start at index 0, while menu choices start at 1.
+            AssessmentStatus decision = decisions[choice - 1];
+
+            if (service.reviewAssessment(
+                    selectedAssessment, decision, currentRole)) {
+
+                System.out.println(
                         "Assessment status updated to: "
                         + selectedAssessment.getStatus()
                 );
             }
+
+        } catch (NumberFormatException e) {
+            System.out.println(
+                    "Invalid input. Please enter a whole number."
+            );
+        }
     }
+
 }
