@@ -3,7 +3,6 @@ package app;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-
 import model.AssessmentStatus;
 import model.ImpactAssessment;
 import model.Risk;
@@ -132,35 +131,104 @@ public class AssessmentController {
         display.viewAllAssessments(assessments);
     }
 
-    public void selectAssessment() {
+
+    public boolean selectAssessment() {
         if (assessments.isEmpty()) {
             System.out.println("No assessments available.");
-            return;
+            return false;
         }
 
         viewAllAssessments();
 
-        System.out.print("\nEnter assessment number to select: ");
+        while (true) {
+            System.out.print(
+                    "\nChoose an assessment number (0 to go back): "
+            );
 
-        try {
-            int number = Integer.parseInt(
-                    scanner.nextLine().trim());
+            String choice = scanner.nextLine().trim();
 
-            if (number >= 1 && number <= assessments.size()) {
-                selectedAssessment = assessments.get(number - 1);
-
-                System.out.println(
-                        "Selected assessment: "
-                                + selectedAssessment.getProjectChange()
-                                        .getProjectName());
-            } else {
-                System.out.println("Invalid assessment number.");
+            if (choice.equals("0")) {
+                return false;
             }
 
-        } catch (NumberFormatException e) {
-            System.out.println("Please enter a valid whole number.");
+            try {
+                int number = Integer.parseInt(choice);
+
+                if (number >= 1 && number <= assessments.size()) {
+                    selectedAssessment = assessments.get(number - 1);
+
+                    System.out.println("Selected: "
+                            + selectedAssessment.getProjectChange()
+                                    .getProjectName());
+
+                    return true;
+                }
+            } catch (NumberFormatException e) {
+                // Invalid text is handled by the message below.
+            }
+
+            System.out.println("Please enter a number from the list.");
         }
     }
+
+
+    public boolean selectPendingAssessment() {
+
+        List<ImpactAssessment> pending = new ArrayList<>();
+
+        // Only show assessments that need a manager decision.
+        for (ImpactAssessment assessment : assessments) {
+            if (assessment.getStatus()
+                    == AssessmentStatus.PENDING_APPROVAL) {
+                pending.add(assessment);
+            }
+        }
+
+        if (pending.isEmpty()) {
+            System.out.println(
+                    "No assessments are waiting for approval."
+            );
+            return false;
+        }
+
+        System.out.println("\n--- WAITING FOR APPROVAL ---");
+
+        for (int i = 0; i < pending.size(); i++) {
+            System.out.println(
+                    (i + 1) + ". "
+                    + pending.get(i).getProjectChange().getProjectName()
+            );
+        }
+
+        while (true) {
+            System.out.print(
+                    "Choose an assessment (0 to go back): "
+            );
+
+            String choice = scanner.nextLine().trim();
+
+            if (choice.equals("0")) {
+                return false;
+            }
+
+            try {
+                int number = Integer.parseInt(choice);
+
+                if (number >= 1 && number <= pending.size()) {
+                    selectedAssessment = pending.get(number - 1);
+                    return true;
+                }
+            } catch (NumberFormatException e) {
+                // Invalid input is handled below.
+            }
+
+            System.out.println(
+                    "Please choose a number shown above."
+            );
+        }
+    }
+
+
 
     public void startAssessment() {
         if (!hasSelectedAssessment()) {

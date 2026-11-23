@@ -2,7 +2,6 @@
 package app;
 
 import java.util.Scanner;
-
 import model.ImpactAssessment;
 import model.ProjectChange;
 import model.Risk;
@@ -19,38 +18,84 @@ public class AssessmentInput {
         this.service = service;
     }
 
+
     public ImpactAssessment createAssessment() {
         System.out.println("\n--- CREATE NEW ASSESSMENT ---");
 
-        String projectName = readRequiredText("Enter project name: ");
-        String description = readRequiredText("Describe the proposed change: ");
-        String reason = readRequiredText("Why is this change needed? ");
+        hint("Tell us what is changing and why it is needed.");
+
+        String projectName = readRequiredText(
+                "Enter project name: "
+        );
+
+        hint("Briefly describe the change being proposed.");
+        String description = readRequiredText(
+                "Describe the proposed change: "
+        );
+
+        hint("Explain what the project is aiming to improve.");
+        String reason = readRequiredText(
+                "Why is this change needed? "
+        );
+
+        hint("Use the format dd/MM/yyyy, for example 15/12/2026.");
         String date = readValidDate();
 
         return service.createAssessment(
-                projectName, description, reason, date);
+                projectName, description, reason, date
+        );
     }
+
+
 
     public Risk addRisk() {
         System.out.println("\n--- ADD NEW RISK ---");
 
-        String description = readRequiredText("Enter risk description: ");
-        int probability = readRiskRating("probability");
-        int impact = readRiskRating("impact");
-        String mitigation = readRequiredText("Enter mitigation: ");
+        hint("What could go wrong, and how could you reduce the impact?");
+        String description = readRequiredText(
+                "Enter risk description: "
+        );
 
-        return new Risk(description, probability, impact, mitigation);
+        hint("Probability: 1 = very unlikely, 5 = very likely.");
+        int probability = readRiskRating("probability");
+
+        hint("Impact: 1 = minor, 5 = severe.");
+        int impact = readRiskRating("impact");
+
+        hint("Describe the action you would take to manage this risk.");
+        String mitigation = readRequiredText(
+                "Enter mitigation: "
+        );
+
+        return new Risk(
+                description, probability, impact, mitigation
+        );
     }
+
+
 
     public Stakeholder addStakeholder() {
         System.out.println("\n--- ADD STAKEHOLDER ---");
 
-        String name = readRequiredText("Enter stakeholder name: ");
-        String role = readRequiredText("Enter their role: ");
-        String department = readRequiredText("Enter their department: ");
+        hint("Who might be affected by this change or involved in it?");
+
+        String name = readRequiredText(
+                "Enter stakeholder name: "
+        );
+
+        hint("What is their responsibility within the project?");
+        String role = readRequiredText(
+                "Enter their role: "
+        );
+
+        hint("Which team or department do they belong to?");
+        String department = readRequiredText(
+                "Enter their department: "
+        );
 
         return new Stakeholder(name, role, department);
     }
+
 
     // Repeats the question if the user enters nothing or just spaces.
     private String readRequiredText(String prompt) {
@@ -97,4 +142,11 @@ public class AssessmentInput {
             }
         }
     }
+
+
+    private void hint(String message) {
+        // ANSI colour codes display guidance in grey in the terminal.
+        System.out.println("\033[90m  " + message + "\033[0m");
+    }
+
 }

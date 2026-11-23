@@ -1,3 +1,4 @@
+
 package app;
 
 import java.util.Scanner;
@@ -9,12 +10,13 @@ public class AssessmentMenu {
 
     private final Scanner scanner;
     private final AssessmentController controller;
-    private boolean running;
+    private final AssessmentWizard wizard;
+    private boolean running = true;
 
     public AssessmentMenu() {
         scanner = new Scanner(System.in);
         controller = new AssessmentController(scanner);
-        running = true;
+        wizard = new AssessmentWizard(scanner, controller);
     }
 
     public void start() {
@@ -22,10 +24,8 @@ public class AssessmentMenu {
 
         while (running) {
             showMenu();
-
-            System.out.print("Enter your choice: ");
+            System.out.print("Choose an option: ");
             String choice = scanner.nextLine().trim();
-
             handleChoice(choice);
         }
 
@@ -33,138 +33,103 @@ public class AssessmentMenu {
     }
 
     private void showMenu() {
-
         System.out.println("\n======================================");
         System.out.println("       IMPACT ASSESSMENT SYSTEM");
         System.out.println("======================================");
+        System.out.println("Current role: "
+                + controller.getCurrentRole());
 
-        System.out.println("Current role: " + controller.getCurrentRole());
+        ImpactAssessment selected =
+                controller.getSelectedAssessment();
 
-        ImpactAssessment assessment = controller.getSelectedAssessment();
-
-        if (assessment != null) {
+        if (selected != null) {
             System.out.println("Selected project: "
-                    + assessment.getProjectChange().getProjectName());
-            System.out.println("Status: " + assessment.getStatus());
-        } else {
-            System.out.println("Selected project: None");
+                    + selected.getProjectChange().getProjectName());
+            System.out.println("Status: " + selected.getStatus());
         }
 
-        System.out.println("--------------------------------------");
-        System.out.println("       ASSESSMENT MANAGEMENT");
-        System.out.println("--------------------------------------");
-        System.out.println("[1]  Create new assessment");
-        System.out.println("[2]  View all assessments");
-        System.out.println("[3]  Select assessment");
+        if (controller.getCurrentRole() == UserRole.EMPLOYEE) {
+            System.out.println("\n1. Create a new assessment (guided)");
+            System.out.println("2. Continue an existing assessment");
+            System.out.println("3. View all assessments");
+            System.out.println("4. Generate a report");
+            System.out.println("5. Switch role");
+        } else {
+            System.out.println("\n1. Review assessments awaiting approval");
+            System.out.println("2. View all assessments");
+            System.out.println("3. Generate a report");
+            System.out.println("4. Switch role");
+        }
 
-        System.out.println("\n       RISKS & STAKEHOLDERS");
-        System.out.println("--------------------------------------");
-        System.out.println("[4]  Add risk");
-        System.out.println("[5]  View prioritised risks");
-        System.out.println("[6]  Add stakeholder");
-        System.out.println("[7]  View stakeholders");
-
-        System.out.println("\n       REVIEW & APPROVAL");
-        System.out.println("--------------------------------------");
-        System.out.println("[8]  Check missing information");
-        System.out.println("[9]  Start / Resume assessment");
-        System.out.println("[10] Submit for approval");
-        System.out.println("[11] Manager review");
-
-        System.out.println("\n       SYSTEM");
-        System.out.println("--------------------------------------");
-        System.out.println("[12] Generate report");
-        System.out.println("[13] Switch user role");
-        System.out.println("[0]  Exit application");
-
+        System.out.println("0. Exit");
         System.out.println("======================================");
     }
 
     private void handleChoice(String choice) {
+        if (choice.equals("0")) {
+            System.out.println("Goodbye!");
+            running = false;
+            return;
+        }
 
-        switch (choice) {
-
-            case "1":
-                controller.createAssessment();
-                break;
-
-            case "2":
-                controller.viewAllAssessments();
-                break;
-
-            case "3":
-                controller.selectAssessment();
-                break;
-
-            case "4":
-                controller.addRisk();
-                break;
-
-            case "5":
-                controller.viewRisks();
-                break;
-
-            case "6":
-                controller.addStakeholder();
-                break;
-
-            case "7":
-                controller.viewStakeholders();
-                break;
-
-            case "8":
-                controller.checkMissingInformation();
-                break;
-
-            case "9":
-                controller.startAssessment();
-                break;
-
-            case "10":
-                controller.submitAssessment();
-                break;
-
-            case "11":
-                controller.reviewAssessment();
-                break;
-
-            case "12":
-                controller.generateReport();
-                break;
-
-            case "13":
-                controller.setCurrentRole(selectRole());
-                break;
-
-            case "0":
-                System.out.println("\nThank you for using the system!");
-                running = false;
-                break;
-
-            default:
-                System.out.println("Invalid option. Please try again.");
+        if (controller.getCurrentRole() == UserRole.EMPLOYEE) {
+            switch (choice) {
+                case "1":
+                    wizard.createGuidedAssessment();
+                    break;
+                case "2":
+                    wizard.continueAssessment();
+                    break;
+                case "3":
+                    controller.viewAllAssessments();
+                    break;
+                case "4":
+                    wizard.chooseAndGenerateReport();
+                    break;
+                case "5":
+                    controller.setCurrentRole(selectRole());
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        } else {
+            switch (choice) {
+                case "1":
+                    wizard.reviewPendingAssessment();
+                    break;
+                case "2":
+                    controller.viewAllAssessments();
+                    break;
+                case "3":
+                    wizard.chooseAndGenerateReport();
+                    break;
+                case "4":
+                    controller.setCurrentRole(selectRole());
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
         }
     }
 
     private UserRole selectRole() {
         while (true) {
-            System.out.println("\n--- SELECT USER ROLE ---");
+            System.out.println("\n--- SELECT ROLE ---");
             System.out.println("1. Employee");
-            System.out.println("2. Senior Manager");
-            System.out.print("Select your role: ");
+            System.out.println("2. Manager");
+            System.out.print("Choose a role: ");
 
             String choice = scanner.nextLine().trim();
 
-            switch (choice) {
-                case "1":
-                    System.out.println("Employee mode activated.");
-                    return UserRole.EMPLOYEE;
-                case "2":
-                    System.out.println("Senior Manager mode activated.");
-                    return UserRole.MANAGER;
-                default:
-                    System.out.println("Invalid choice. Please try again.");
+            if (choice.equals("1")) {
+                return UserRole.EMPLOYEE;
             }
+
+            if (choice.equals("2")) {
+                return UserRole.MANAGER;
+            }
+
+            System.out.println("Enter 1 or 2.");
         }
     }
 }
